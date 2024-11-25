@@ -1,123 +1,86 @@
-import { useState, useEffect, useRef } from 'react'
-import { format, setYear, setMonth } from 'date-fns'
-import { Button } from "@/components/ui/button"
+import { format, setYear, setMonth, getYear, getMonth } from 'date-fns'
+import { cn } from '@/lib/utils'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { cn } from "@/lib/utils"
+import { useState, RefObject } from 'react'
 
 interface MonthYearPickerProps {
   selectedDate: Date
   onSelect: (date: Date) => void
   onClose: () => void
-  triggerRef: React.RefObject<HTMLButtonElement>
+  triggerRef: RefObject<HTMLButtonElement>
 }
 
+const months = [
+  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+]
+
 export function MonthYearPicker({ selectedDate, onSelect, onClose, triggerRef }: MonthYearPickerProps) {
-  const [viewYear, setViewYear] = useState(selectedDate.getFullYear())
-  const [selectedMonth, setSelectedMonth] = useState(selectedDate.getMonth())
-  const containerRef = useRef<HTMLDivElement>(null)
-
-  const months = [
-    'Jan', 'Feb', 'Mar', 'Apr',
-    'May', 'Jun', 'Jul', 'Aug',
-    'Sep', 'Oct', 'Nov', 'Dec'
-  ]
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        onClose()
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [onClose])
-
-  useEffect(() => {
-    if (containerRef.current && triggerRef.current) {
-      const triggerRect = triggerRef.current.getBoundingClientRect()
-      containerRef.current.style.top = `${triggerRect.bottom + window.scrollY + 4}px`
-      containerRef.current.style.left = `${triggerRect.left + window.scrollX}px`
-    }
-  }, [triggerRef])
+  const [displayYear, setDisplayYear] = useState(getYear(selectedDate))
 
   const handleYearChange = (increment: number) => {
-    setViewYear(prev => prev + increment)
+    setDisplayYear(prev => prev + increment)
   }
 
-  const handleSelect = (month: number) => {
-    const newDate = setMonth(setYear(selectedDate, viewYear), month)
+  const handleMonthSelect = (monthIndex: number) => {
+    const newDate = setMonth(setYear(selectedDate, displayYear), monthIndex)
     onSelect(newDate)
     onClose()
   }
 
   return (
-    <div 
-      ref={containerRef}
-      className="fixed z-50 bg-white rounded-xl shadow-lg border border-gray-100 p-3 w-[240px]"
-      style={{
-        transform: 'translateY(8px)',
-        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)'
-      }}
-    >
-      {/* Year selector */}
-      <div className="flex items-center justify-between mb-4">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-6 w-6 hover:bg-gray-100 rounded-full"
-          onClick={() => handleYearChange(-1)}
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
-        <span className="text-sm font-semibold">{viewYear}</span>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-6 w-6 hover:bg-gray-100 rounded-full"
-          onClick={() => handleYearChange(1)}
-        >
-          <ChevronRight className="h-4 w-4" />
-        </Button>
-      </div>
-
-      {/* Month grid */}
-      <div className="grid grid-cols-4 gap-1 mb-4">
-        {months.map((month, index) => (
-          <Button
-            key={month}
-            variant="ghost"
-            className={cn(
-              "h-8 rounded-lg text-xs font-medium hover:bg-gray-100 p-0",
-              index === selectedMonth && viewYear === selectedDate.getFullYear()
-                ? "bg-gray-900 text-white hover:bg-gray-800"
-                : "text-gray-600"
-            )}
-            onClick={() => handleSelect(index)}
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24">
+      <div className="bg-background border rounded-lg shadow-lg p-4 w-[300px]">
+        <div className="flex items-center justify-between mb-4">
+          <button onClick={() => handleYearChange(-1)}>
+            <ChevronLeft className="h-5 w-5" />
+          </button>
+          <span className="font-semibold">{displayYear}</span>
+          <button onClick={() => handleYearChange(1)}>
+            <ChevronRight className="h-5 w-5" />
+          </button>
+        </div>
+        
+        <div className="grid grid-cols-3 gap-2">
+          {months.map((month, index) => (
+            <button
+              key={month}
+              className={cn(
+                "p-2 rounded-md hover:bg-secondary/80 transition-colors",
+                getMonth(selectedDate) === index && 
+                getYear(selectedDate) === displayYear && 
+                'bg-secondary'
+              )}
+              onClick={() => handleMonthSelect(index)}
+            >
+              {month}
+            </button>
+          ))}
+        </div>
+        
+        <div className="mt-4 flex justify-end gap-2">
+          <button
+            className="px-4 py-2 rounded-md bg-secondary hover:bg-secondary/80"
+            onClick={() => {
+              onSelect(new Date())
+              onClose()
+            }}
           >
-            {month}
-          </Button>
-        ))}
+            Today
+          </button>
+          <button
+            className="px-4 py-2 rounded-md border hover:bg-secondary/80"
+            onClick={onClose}
+          >
+            Cancel
+          </button>
+        </div>
       </div>
-
-      {/* Bottom buttons */}
-      <div className="flex justify-center space-x-2">
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-7 text-xs rounded-full"
-          onClick={() => handleSelect(new Date().getMonth())}
-        >
-          Today
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-7 text-xs rounded-full"
-          onClick={onClose}
-        >
-          Cancel
-        </Button>
-      </div>
+      
+      <div 
+        className="fixed inset-0 bg-black/50 -z-10" 
+        onClick={onClose}
+      />
     </div>
   )
 } 

@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useRef, useEffect } from 'react'
-import { format, addHours, isSameDay, parseISO, setHours, setMinutes, addMinutes } from 'date-fns'
+import { useState, useRef } from 'react'
+import { format, isSameDay, parseISO, setHours, addMinutes } from 'date-fns'
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd'
 import { Task } from '../types/Task'
 import { cn } from "@/lib/utils"

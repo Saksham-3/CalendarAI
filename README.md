@@ -14,9 +14,10 @@ CalendarAI is a modern, intuitive weekly task management application built with 
 ### ✨ Task Management
 - Create, edit, and delete tasks with ease
 - Drag-and-drop functionality for quick rescheduling
-- Color-coded tasks for better organization
-- Task duration visualization
-- Task priority levels with stackable cards
+- Priority levels (High, Medium, Low) with visual indicators
+- Stackable task cards for overlapping schedules
+- Customizable task duration (30 min to 3 hours)
+- Detailed task descriptions and time tracking
 
 ![Priority](https://github.com/user-attachments/assets/278d56f2-a434-4159-8e70-1011e9b40178)
 
@@ -34,7 +35,7 @@ CalendarAI is a modern, intuitive weekly task management application built with 
 - **Styling**: Tailwind CSS
 - **UI Components**: shadcn/ui
 - **State Management**: React Context
-- **Drag and Drop**: react-beautiful-dnd
+- **Drag and Drop**: hello-pangea/dnd
 - **Icons**: Lucide React
 
 

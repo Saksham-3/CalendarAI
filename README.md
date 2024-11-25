@@ -1,6 +1,6 @@
-# TaskFlow
+# CalendarAi (Demo - calendar-ai-tan.vercel.app)
 
-TaskFlow is a modern, intuitive weekly task management application built with Next.js, TypeScript, and Tailwind CSS. It helps users organize their tasks efficiently with a clean, visual weekly layout.
+CalendarAi is a modern, intuitive weekly task management application built with Next.js, TypeScript, and Tailwind CSS. It helps users organize their tasks efficiently with a clean, visual weekly layout.
 
 ![Drag](https://github.com/user-attachments/assets/c60bbd7e-6f9a-4e5d-b035-dd1d22b3aa5c)
 
@@ -16,10 +16,9 @@ TaskFlow is a modern, intuitive weekly task management application built with Ne
 - Drag-and-drop functionality for quick rescheduling
 - Color-coded tasks for better organization
 - Task duration visualization
+- Task priority levels with stackable cards
 
 ![Priority](https://github.com/user-attachments/assets/278d56f2-a434-4159-8e70-1011e9b40178)
-
-- Task priority levels with stackable cards
 
 ### 🎯 Core Functionalities
 - **Quick Task Creation**: Add tasks with title, duration, and color coding
@@ -30,7 +29,7 @@ TaskFlow is a modern, intuitive weekly task management application built with Ne
 
 ## Tech Stack
 
-- **Framework**: Next.js 14
+- **Framework**: Next.js 15
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS
 - **UI Components**: shadcn/ui
@@ -38,7 +37,6 @@ TaskFlow is a modern, intuitive weekly task management application built with Ne
 - **Drag and Drop**: react-beautiful-dnd
 - **Icons**: Lucide React
 
-## Getting Started
 
 ### Prerequisites
 

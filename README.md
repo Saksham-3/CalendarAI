@@ -1,4 +1,4 @@
-# CalendarAI - (Demo](calendar-ai-tan.vercel.app)
+# CalendarAI - [Demo](calendar-ai-tan.vercel.app)
 
 CalendarAI is a modern, intuitive weekly task management application built with Next.js, TypeScript, and Tailwind CSS. It helps users organize their tasks efficiently with a clean, visual weekly layout.
 

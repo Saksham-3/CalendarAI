@@ -124,4 +124,15 @@
       height: -webkit-fill-available;
     }
   }
+
+  /* Styles for the month year picker */
+  .month-year-picker-mobile {
+    @apply fixed inset-0 z-50 flex items-center justify-center p-4 md:p-0 md:relative;
+  }
+
+  /* Ensure picker is scrollable on mobile */
+  .month-year-picker-content {
+    @apply max-h-[80vh] overflow-auto md:max-h-none md:overflow-visible;
+    -webkit-overflow-scrolling: touch;
+  }
 }

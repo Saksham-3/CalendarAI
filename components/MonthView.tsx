@@ -52,36 +52,42 @@ export function MonthView({ selectedDate, onSelectDate }: MonthViewProps) {
           <ChevronLeft className="h-4 w-4" />
         </Button>
         
-        <div className="inline-block">
+        <div className="relative inline-block">
           <Button
             ref={triggerRef}
             variant="ghost"
-            className="text-lg font-semibold hover:bg-transparent px-2 whitespace-nowrap [&:not(:hover)]:text-[clamp(0.875rem,2.5vw,1.125rem)]"
+            className="text-lg font-semibold hover:bg-transparent px-2"
             onClick={() => setIsPickerOpen(true)}
           >
             {format(currentMonth, 'MMMM yyyy')}
           </Button>
+          
+          {isPickerOpen && (
+            <>
+              <div 
+                className="fixed inset-0 bg-black/20 z-40"
+                onClick={() => setIsPickerOpen(false)} 
+              />
+              <div className="relative z-50">
+                <MonthYearPicker
+                  selectedDate={currentMonth}
+                  onSelect={(date) => {
+                    setCurrentMonth(date)
+                    onSelectDate(date)
+                    setIsPickerOpen(false)
+                  }}
+                  onClose={() => setIsPickerOpen(false)}
+                  triggerRef={triggerRef}
+                />
+              </div>
+            </>
+          )}
         </div>
 
         <Button variant="ghost" size="icon" onClick={handleNextMonth}>
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>
-      
-      {isPickerOpen && (
-        <>
-          <div className="fixed inset-0 bg-transparent" onClick={() => setIsPickerOpen(false)} />
-          <MonthYearPicker
-            selectedDate={currentMonth}
-            onSelect={(date) => {
-              setCurrentMonth(date)
-              onSelectDate(date)
-            }}
-            onClose={() => setIsPickerOpen(false)}
-            triggerRef={triggerRef}
-          />
-        </>
-      )}
       
       <div className="grid grid-cols-7 gap-1">
         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (

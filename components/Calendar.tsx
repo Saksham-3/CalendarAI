@@ -88,6 +88,9 @@ export function Calendar() {
 
   const handleEditTask = (task: Task) => {
     setEditingTask(task)
+    if (window.innerWidth <= 768) {
+      setIsTaskFormOpen(true)
+    }
   }
 
   const handleCancelEdit = () => {
@@ -181,7 +184,7 @@ export function Calendar() {
         <MonthView selectedDate={selectedDate.toDate()} onSelectDate={handleDateSelect} />
       </div>
 
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden">
         <div className="flex justify-between items-center p-4">
           <div className="flex items-center space-x-2">
             <Button variant="ghost" size="icon" onClick={handlePreviousWeek}>
@@ -210,13 +213,19 @@ export function Calendar() {
         "fixed inset-0 z-50 bg-white md:relative md:block md:w-96",
         "overflow-y-auto pb-20 md:pb-0",
         isTaskFormOpen ? "translate-x-0" : "translate-x-full",
-        "md:translate-x-0 border-l"
+        "md:translate-x-0 border-l transition-transform duration-200"
       )}>
-        <div className="sticky top-0 z-10 flex justify-end p-2 md:hidden bg-white border-b">
+        <div className="sticky top-0 z-10 flex justify-between items-center p-2 md:hidden bg-white border-b">
+          <span className="font-semibold">
+            {editingTask ? 'Edit Task' : 'Create Task'}
+          </span>
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => setIsTaskFormOpen(false)}
+            onClick={() => {
+              setIsTaskFormOpen(false)
+              if (editingTask) setEditingTask(null)
+            }}
           >
             Close
           </Button>
@@ -225,7 +234,12 @@ export function Calendar() {
           <CreateTaskForm 
             onCreateTask={handleCreateOrUpdateTask} 
             editTask={editingTask}
-            onCancelEdit={handleCancelEdit}
+            onCancelEdit={() => {
+              handleCancelEdit()
+              if (window.innerWidth <= 768) {
+                setIsTaskFormOpen(false)
+              }
+            }}
           />
           <div className="mt-12 mb-20 md:mb-8">
             <ComposioAI onSuggestTask={handleAISuggestion} />

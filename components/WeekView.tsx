@@ -95,8 +95,8 @@ export function WeekView({ dates, tasks, onUpdateTask, onDeleteTask, onEditTask,
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <div className="flex-1 overflow-auto mobile-calendar-container">
-        <div className="week-grid">
+      <div className="flex-1 overflow-auto mobile-calendar-container h-[calc(100vh-120px)] md:h-[calc(100vh-100px)]">
+        <div className="week-grid min-w-[800px]">
           <div className="flex">
             <div className="w-20 flex-shrink-0" style={{ position: 'relative' }}>
               {isPickerOpen && (

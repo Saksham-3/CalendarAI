@@ -93,12 +93,23 @@
 
     /* New styles for better mobile experience */
     .week-grid {
-      min-width: 800px; /* Ensures week view is scrollable horizontally */
+      min-width: 800px;
+      height: auto;
     }
 
     .mobile-calendar-container {
       overflow-x: auto;
+      overflow-y: auto;
       -webkit-overflow-scrolling: touch;
+      height: calc(100vh - 120px);
+    }
+  }
+
+  /* Desktop calendar adjustments */
+  @media (min-width: 769px) {
+    .mobile-calendar-container {
+      height: calc(100vh - 100px);
+      overflow-y: auto;
     }
   }
 

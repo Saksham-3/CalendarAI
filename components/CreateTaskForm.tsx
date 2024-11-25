@@ -76,84 +76,83 @@ export function CreateTaskForm({ onCreateTask, editTask, onCancelEdit }: CreateT
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <Label htmlFor="title">Task Title</Label>
-        <Input
-          id="title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-        />
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="space-y-4">
+        <div>
+          <Label className="text-base font-semibold">Task Title</Label>
+          <Input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="mt-2"
+          />
+        </div>
+        <div>
+          <Label className="text-base font-semibold">Date</Label>
+          <Input
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            className="mt-2"
+          />
+        </div>
+        <div>
+          <Label htmlFor="startTime">Start Time</Label>
+          <Select value={startTime} onValueChange={setStartTime}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select start time" />
+            </SelectTrigger>
+            <SelectContent className="h-[200px]">
+              {TIME_OPTIONS.map((time) => (
+                <SelectItem key={time} value={time}>
+                  {format(parse(time, 'HH:mm', new Date()), 'h:mm a')}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="duration">Duration</Label>
+          <Select value={duration} onValueChange={setDuration}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select duration" />
+            </SelectTrigger>
+            <SelectContent>
+              {DURATION_OPTIONS.map((option) => (
+                <SelectItem key={option} value={option}>{option}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="priority">Priority</Label>
+          <Select value={priority} onValueChange={(value: 'low' | 'medium' | 'high') => setPriority(value)}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select priority" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="low">Low</SelectItem>
+              <SelectItem value="medium">Medium</SelectItem>
+              <SelectItem value="high">High</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="description">Description</Label>
+          <Textarea
+            id="description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Enter task description"
+          />
+        </div>
       </div>
-      <div>
-        <Label htmlFor="date">Date</Label>
-        <Input
-          id="date"
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <Label htmlFor="startTime">Start Time</Label>
-        <Select value={startTime} onValueChange={setStartTime}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select start time" />
-          </SelectTrigger>
-          <SelectContent className="h-[200px]">
-            {TIME_OPTIONS.map((time) => (
-              <SelectItem key={time} value={time}>
-                {format(parse(time, 'HH:mm', new Date()), 'h:mm a')}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <div>
-        <Label htmlFor="duration">Duration</Label>
-        <Select value={duration} onValueChange={setDuration}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select duration" />
-          </SelectTrigger>
-          <SelectContent>
-            {DURATION_OPTIONS.map((option) => (
-              <SelectItem key={option} value={option}>{option}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <div>
-        <Label htmlFor="priority">Priority</Label>
-        <Select value={priority} onValueChange={(value: 'low' | 'medium' | 'high') => setPriority(value)}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select priority" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="low">Low</SelectItem>
-            <SelectItem value="medium">Medium</SelectItem>
-            <SelectItem value="high">High</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      <div>
-        <Label htmlFor="description">Description</Label>
-        <Textarea
-          id="description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="Enter task description"
-        />
-      </div>
-      <div className="flex justify-between">
-        <Button type="submit">{editTask ? 'Update Task' : 'Create Task'}</Button>
-        {editTask && (
-          <Button type="button" variant="outline" onClick={onCancelEdit}>
-            Cancel
-          </Button>
-        )}
-      </div>
+      <Button 
+        type="submit" 
+        className="w-full mt-8"
+      >
+        {editTask ? 'Update Task' : 'Create Task'}
+      </Button>
     </form>
   )
 }

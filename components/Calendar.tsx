@@ -8,7 +8,7 @@ import { CreateTaskForm } from './CreateTaskForm'
 import { ComposioAI } from './ComposioAI'
 import { Task } from '../types/Task'
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Menu } from 'lucide-react'
 import { toast } from "@/components/ui/use-toast"
 import { useToast } from "@/components/ui/use-toast"
 import { cn } from '@/lib/utils'
@@ -25,6 +25,8 @@ export function Calendar() {
   const [tasks, setTasks] = useState<Task[]>([])
   const [editingTask, setEditingTask] = useState<Task | null>(null)
   const { toast } = useToast()
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [isTaskFormOpen, setIsTaskFormOpen] = useState(false)
 
   const handleDateSelect = (date: Date) => {
     setSelectedDate(dayjs(date))
@@ -86,6 +88,9 @@ export function Calendar() {
 
   const handleEditTask = (task: Task) => {
     setEditingTask(task)
+    if (window.innerWidth <= 768) {
+      setIsTaskFormOpen(true)
+    }
   }
 
   const handleCancelEdit = () => {
@@ -136,10 +141,49 @@ export function Calendar() {
   }
 
   return (
-    <div className="flex h-screen">
-      <div className="w-64 border-r overflow-auto">
+    <div className="flex h-screen w-full flex-col md:flex-row">
+      <div className="flex items-center justify-between p-2 md:hidden bg-white border-b">
+        <button
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          className="rounded-lg bg-gray-100 p-2 hover:bg-gray-200"
+        >
+          <Menu className="h-6 w-6" />
+        </button>
+        <div className="flex items-center space-x-2">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={handleJumpToToday}
+          >
+            Today
+          </Button>
+          <button
+            onClick={() => setIsTaskFormOpen(!isTaskFormOpen)}
+            className="rounded-lg bg-gray-100 p-2 hover:bg-gray-200"
+          >
+            Add Task
+          </button>
+        </div>
+      </div>
+
+      <div className={cn(
+        "fixed inset-0 z-50 bg-white md:relative md:block md:w-64 md:min-w-64",
+        "overflow-y-auto",
+        isSidebarOpen ? "translate-x-0" : "-translate-x-full",
+        "md:translate-x-0"
+      )}>
+        <div className="sticky top-0 z-10 flex justify-end p-2 md:hidden bg-white border-b">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsSidebarOpen(false)}
+          >
+            Close
+          </Button>
+        </div>
         <MonthView selectedDate={selectedDate.toDate()} onSelectDate={handleDateSelect} />
       </div>
+
       <div className="flex-1 flex flex-col overflow-hidden">
         <div className="flex justify-between items-center p-4">
           <div className="flex items-center space-x-2">
@@ -164,14 +208,42 @@ export function Calendar() {
           selectedDate={selectedDate.toDate()}
         />
       </div>
-      <div className="w-64 border-l p-4 overflow-auto">
-        <CreateTaskForm 
-          onCreateTask={handleCreateOrUpdateTask} 
-          editTask={editingTask}
-          onCancelEdit={handleCancelEdit}
-        />
-        <div className="mt-8">
-          <ComposioAI onSuggestTask={handleAISuggestion} />
+
+      <div className={cn(
+        "fixed inset-0 z-50 bg-white md:relative md:block md:w-96",
+        "overflow-y-auto pb-20 md:pb-0",
+        isTaskFormOpen ? "translate-x-0" : "translate-x-full",
+        "md:translate-x-0 border-l transition-transform duration-200"
+      )}>
+        <div className="sticky top-0 z-10 flex justify-between items-center p-2 md:hidden bg-white border-b">
+          <span className="font-semibold">
+            {editingTask ? 'Edit Task' : 'Create Task'}
+          </span>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setIsTaskFormOpen(false)
+              if (editingTask) setEditingTask(null)
+            }}
+          >
+            Close
+          </Button>
+        </div>
+        <div className="h-full overflow-y-auto px-6 py-4">
+          <CreateTaskForm 
+            onCreateTask={handleCreateOrUpdateTask} 
+            editTask={editingTask}
+            onCancelEdit={() => {
+              handleCancelEdit()
+              if (window.innerWidth <= 768) {
+                setIsTaskFormOpen(false)
+              }
+            }}
+          />
+          <div className="mt-12 mb-20 md:mb-8">
+            <ComposioAI onSuggestTask={handleAISuggestion} />
+          </div>
         </div>
       </div>
     </div>

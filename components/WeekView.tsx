@@ -95,174 +95,176 @@ export function WeekView({ dates, tasks, onUpdateTask, onDeleteTask, onEditTask,
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <div className="flex-1 overflow-auto">
-        <div className="flex">
-          <div className="w-20 flex-shrink-0" style={{ position: 'relative' }}>
-            {isPickerOpen && (
-              <MonthYearPicker
-                selectedDate={currentMonth}
-                onSelect={(date) => {
-                  setCurrentMonth(date)
-                  onSelectDate?.(date)
-                }}
-                onClose={() => setIsPickerOpen(false)}
-                triggerRef={triggerRef}
-              />
-            )}
-          </div>
-          {dates.map((date, index) => (
-            <div 
-              key={index} 
-              className={cn(
-                "flex-1 text-center border-t border-gray-200",
-                isSameDay(date, selectedDate) 
-                  ? "bg-gray-100" 
-                  : "",
-                index === 0 ? "border-l border-gray-200" : "",
-                "border-r border-gray-200"
+      <div className="flex-1 overflow-auto mobile-calendar-container h-[calc(100vh-120px)] md:h-[calc(100vh-100px)]">
+        <div className="week-grid min-w-[800px]">
+          <div className="flex">
+            <div className="w-20 flex-shrink-0" style={{ position: 'relative' }}>
+              {isPickerOpen && (
+                <MonthYearPicker
+                  selectedDate={currentMonth}
+                  onSelect={(date) => {
+                    setCurrentMonth(date)
+                    onSelectDate?.(date)
+                  }}
+                  onClose={() => setIsPickerOpen(false)}
+                  triggerRef={triggerRef}
+                />
               )}
-            >
-              <div className="sticky top-0 bg-inherit z-10 py-2">
-                <h2 className="text-sm font-semibold">{format(date, 'EEE')}</h2>
-                <p className="text-xs text-gray-500">{format(date, 'MMM d')}</p>
-              </div>
             </div>
-          ))}
-        </div>
-        <div className="relative" ref={gridRef}>
-          {HOURS.map((hour) => (
-            <div key={hour} className="flex">
-              <div className="w-20 flex-shrink-0 text-right pr-2 py-2 text-xs text-gray-500">
-                {format(setHours(new Date(), hour), 'h a')}
+            {dates.map((date, index) => (
+              <div 
+                key={index} 
+                className={cn(
+                  "flex-1 text-center border-t border-gray-200",
+                  isSameDay(date, selectedDate) 
+                    ? "bg-gray-100" 
+                    : "",
+                  index === 0 ? "border-l border-gray-200" : "",
+                  "border-r border-gray-200"
+                )}
+              >
+                <div className="sticky top-0 bg-inherit z-10 py-2">
+                  <h2 className="text-sm font-semibold">{format(date, 'EEE')}</h2>
+                  <p className="text-xs text-gray-500">{format(date, 'MMM d')}</p>
+                </div>
               </div>
-              {dates.map((date, dateIndex) => (
-                <Droppable key={`${dateIndex}-${hour}`} droppableId={`date-${dateIndex}-${hour}`}>
-                  {(provided) => (
-                    <div
-                      {...provided.droppableProps}
-                      ref={provided.innerRef}
-                      className={cn(
-                        "flex-1 h-[60px] relative border-b border-gray-200",
-                        isSameDay(date, selectedDate)
-                          ? "bg-gray-100" 
-                          : "bg-white",
-                        dateIndex === 0 ? "border-l border-gray-200" : "",
-                        "border-r border-gray-200"
-                      )}
-                    >
-                      {getTasksForDateAndHour(date, hour).map((task, taskIndex, tasksArray) => (
-                        <Draggable key={task.id} draggableId={task.id} index={taskIndex}>
-                          {(provided) => (
-                            <>
-                              {/* Background stack of cards for lower priority tasks */}
-                              {tasksArray.slice(taskIndex + 1).map((lowerTask, stackIndex) => (
-                                <div 
-                                  key={`${task.id}-stack-${stackIndex}`}
+            ))}
+          </div>
+          <div className="relative" ref={gridRef}>
+            {HOURS.map((hour) => (
+              <div key={hour} className="flex">
+                <div className="w-20 flex-shrink-0 text-right pr-2 py-2 text-xs text-gray-500">
+                  {format(setHours(new Date(), hour), 'h a')}
+                </div>
+                {dates.map((date, dateIndex) => (
+                  <Droppable key={`${dateIndex}-${hour}`} droppableId={`date-${dateIndex}-${hour}`}>
+                    {(provided) => (
+                      <div
+                        {...provided.droppableProps}
+                        ref={provided.innerRef}
+                        className={cn(
+                          "flex-1 h-[60px] relative border-b border-gray-200",
+                          isSameDay(date, selectedDate)
+                            ? "bg-gray-100" 
+                            : "bg-white",
+                          dateIndex === 0 ? "border-l border-gray-200" : "",
+                          "border-r border-gray-200"
+                        )}
+                      >
+                        {getTasksForDateAndHour(date, hour).map((task, taskIndex, tasksArray) => (
+                          <Draggable key={task.id} draggableId={task.id} index={taskIndex}>
+                            {(provided) => (
+                              <>
+                                {/* Background stack of cards for lower priority tasks */}
+                                {tasksArray.slice(taskIndex + 1).map((lowerTask, stackIndex) => (
+                                  <div 
+                                    key={`${task.id}-stack-${stackIndex}`}
+                                    className={cn(
+                                      "absolute top-0 left-0 right-0 m-1 rounded",
+                                      lowerTask.priority === 'high' ? 'bg-red-100' :
+                                      lowerTask.priority === 'medium' ? 'bg-yellow-100' :
+                                      'bg-green-100'
+                                    )}
+                                    style={{
+                                      height: `${calculateTaskHeight(task.duration)}px`,
+                                      transform: `translateY(${parseInt(task.startTime.split(':')[1]) >= 30 ? '50%' : '0'}) translateY(${(stackIndex + 1) * 4}px)`,
+                                      zIndex: tasksArray.length - taskIndex - stackIndex - 1,
+                                    }}
+                                  />
+                                ))}
+                                {/* Main task card */}
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
                                   className={cn(
-                                    "absolute top-0 left-0 right-0 m-1 rounded",
-                                    lowerTask.priority === 'high' ? 'bg-red-100' :
-                                    lowerTask.priority === 'medium' ? 'bg-yellow-100' :
-                                    'bg-green-100'
+                                    "absolute left-0 right-0 mx-1 p-1.5 text-xs rounded shadow-md group overflow-hidden",
+                                    "border border-gray-300",
+                                    task.priority === 'high' ? 'bg-red-200' :
+                                    task.priority === 'medium' ? 'bg-yellow-200' :
+                                    'bg-green-200',
                                   )}
                                   style={{
                                     height: `${calculateTaskHeight(task.duration)}px`,
-                                    transform: `translateY(${parseInt(task.startTime.split(':')[1]) >= 30 ? '50%' : '0'}) translateY(${(stackIndex + 1) * 4}px)`,
-                                    zIndex: tasksArray.length - taskIndex - stackIndex - 1,
+                                    top: `${calculateTaskOffset(task.startTime)}px`,
+                                    zIndex: tasksArray.length + 1 - taskIndex,
+                                    ...provided.draggableProps.style
                                   }}
-                                />
-                              ))}
-                              {/* Main task card */}
-                              <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                className={cn(
-                                  "absolute left-0 right-0 mx-1 p-1.5 text-xs rounded shadow-md group overflow-hidden",
-                                  "border border-gray-300",
-                                  task.priority === 'high' ? 'bg-red-200' :
-                                  task.priority === 'medium' ? 'bg-yellow-200' :
-                                  'bg-green-200',
-                                )}
-                                style={{
-                                  height: `${calculateTaskHeight(task.duration)}px`,
-                                  top: `${calculateTaskOffset(task.startTime)}px`,
-                                  zIndex: tasksArray.length + 1 - taskIndex,
-                                  ...provided.draggableProps.style
-                                }}
-                              >
-                                {/* Priority badge - now at top right and hides on hover */}
-                                <span 
-                                  className={cn(
-                                    "absolute top-1 right-1 text-[9px] font-medium px-1 rounded bg-opacity-50 bg-gray-200",
-                                    "group-hover:hidden"
-                                  )}
                                 >
-                                  {task.priority}
-                                </span>
+                                  {/* Priority badge - now at top right and hides on hover */}
+                                  <span 
+                                    className={cn(
+                                      "absolute top-1 right-1 text-[9px] font-medium px-1 rounded bg-opacity-50 bg-gray-200",
+                                      "group-hover:hidden"
+                                    )}
+                                  >
+                                    {task.priority}
+                                  </span>
 
-                                {/* Different layouts for long vs short tasks */}
-                                {getDurationInMinutes(task.duration) >= 45 ? (
-                                  <>
+                                  {/* Different layouts for long vs short tasks */}
+                                  {getDurationInMinutes(task.duration) >= 45 ? (
+                                    <>
+                                      <h3 className="font-semibold truncate text-[11px] pr-14" title={task.title}>
+                                        {task.title}
+                                      </h3>
+                                      <p className="truncate text-[10px] text-gray-600">
+                                        {format(new Date(task.date), 'EEE, MMM d')}
+                                      </p>
+                                      <p className="truncate text-[10px] text-gray-600">
+                                        {format(parseISO(`2000-01-01T${task.startTime}`), 'h:mm a')}
+                                        {" - "}
+                                        {format(addMinutes(parseISO(`2000-01-01T${task.startTime}`), getDurationInMinutes(task.duration)), 'h:mm a')}
+                                      </p>
+                                    </>
+                                  ) : (
+                                    // Updated 30-minute task view with inline time
                                     <h3 className="font-semibold truncate text-[11px] pr-14" title={task.title}>
                                       {task.title}
+                                      <span className="font-normal text-gray-600">
+                                        {" - "}
+                                        {format(parseISO(`2000-01-01T${task.startTime}`), 'h:mm a')}
+                                      </span>
                                     </h3>
-                                    <p className="truncate text-[10px] text-gray-600">
-                                      {format(new Date(task.date), 'EEE, MMM d')}
-                                    </p>
-                                    <p className="truncate text-[10px] text-gray-600">
-                                      {format(parseISO(`2000-01-01T${task.startTime}`), 'h:mm a')}
-                                      {" - "}
-                                      {format(addMinutes(parseISO(`2000-01-01T${task.startTime}`), getDurationInMinutes(task.duration)), 'h:mm a')}
-                                    </p>
-                                  </>
-                                ) : (
-                                  // Updated 30-minute task view with inline time
-                                  <h3 className="font-semibold truncate text-[11px] pr-14" title={task.title}>
-                                    {task.title}
-                                    <span className="font-normal text-gray-600">
-                                      {" - "}
-                                      {format(parseISO(`2000-01-01T${task.startTime}`), 'h:mm a')}
-                                    </span>
-                                  </h3>
-                                )}
+                                  )}
 
-                                {/* Edit/Delete buttons - increased size and padding */}
-                                <div className="absolute top-0.5 right-0.5 hidden group-hover:flex space-x-1">
-                                  <Button
-                                    size="icon"
-                                    variant="ghost"
-                                    className="h-5 w-5 p-0.5 hover:bg-black/10"
-                                    onClick={(e) => {
-                                      e.stopPropagation()
-                                      onEditTask(task)
-                                    }}
-                                  >
-                                    <Pencil className="h-3.5 w-3.5" />
-                                  </Button>
-                                  <Button
-                                    size="icon"
-                                    variant="ghost"
-                                    className="h-5 w-5 p-0.5 hover:bg-black/10"
-                                    onClick={(e) => {
-                                      e.stopPropagation()
-                                      onDeleteTask(task.id)
-                                    }}
-                                  >
-                                    <Trash2 className="h-3.5 w-3.5" />
-                                  </Button>
+                                  {/* Edit/Delete buttons - increased size and padding */}
+                                  <div className="absolute top-0.5 right-0.5 hidden group-hover:flex space-x-1">
+                                    <Button
+                                      size="icon"
+                                      variant="ghost"
+                                      className="h-5 w-5 p-0.5 hover:bg-black/10"
+                                      onClick={(e) => {
+                                        e.stopPropagation()
+                                        onEditTask(task)
+                                      }}
+                                    >
+                                      <Pencil className="h-3.5 w-3.5" />
+                                    </Button>
+                                    <Button
+                                      size="icon"
+                                      variant="ghost"
+                                      className="h-5 w-5 p-0.5 hover:bg-black/10"
+                                      onClick={(e) => {
+                                        e.stopPropagation()
+                                        onDeleteTask(task.id)
+                                      }}
+                                    >
+                                      <Trash2 className="h-3.5 w-3.5" />
+                                    </Button>
+                                  </div>
                                 </div>
-                              </div>
-                            </>
-                          )}
-                        </Draggable>
-                      ))}
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </Droppable>
-              ))}
-            </div>
-          ))}
+                              </>
+                            )}
+                          </Draggable>
+                        ))}
+                        {provided.placeholder}
+                      </div>
+                    )}
+                  </Droppable>
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </DragDropContext>

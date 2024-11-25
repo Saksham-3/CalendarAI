@@ -101,4 +101,16 @@
       -webkit-overflow-scrolling: touch;
     }
   }
+
+  /* Improve mobile scrolling - add these new styles */
+  .overflow-y-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Prevent content from getting stuck under mobile browser chrome */
+  @supports (-webkit-touch-callout: none) {
+    .h-screen {
+      height: -webkit-fill-available;
+    }
+  }
 }

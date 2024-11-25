@@ -164,11 +164,12 @@ export function Calendar() {
       </div>
 
       <div className={cn(
-        "fixed inset-0 z-50 bg-white md:relative md:block md:w-64 transition-transform duration-200 ease-in-out",
+        "fixed inset-0 z-50 bg-white md:relative md:block md:w-64 md:min-w-64",
+        "overflow-y-auto",
         isSidebarOpen ? "translate-x-0" : "-translate-x-full",
         "md:translate-x-0"
       )}>
-        <div className="flex justify-end p-2 md:hidden">
+        <div className="sticky top-0 z-10 flex justify-end p-2 md:hidden bg-white border-b">
           <Button
             variant="ghost"
             size="sm"
@@ -178,30 +179,6 @@ export function Calendar() {
           </Button>
         </div>
         <MonthView selectedDate={selectedDate.toDate()} onSelectDate={handleDateSelect} />
-      </div>
-
-      <div className={cn(
-        "fixed inset-0 z-50 bg-white md:relative md:block md:w-64 transition-transform duration-200 ease-in-out",
-        isTaskFormOpen ? "translate-x-0" : "translate-x-full",
-        "md:translate-x-0"
-      )}>
-        <div className="flex justify-end p-2 md:hidden">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsTaskFormOpen(false)}
-          >
-            Close
-          </Button>
-        </div>
-        <CreateTaskForm 
-          onCreateTask={handleCreateOrUpdateTask} 
-          editTask={editingTask}
-          onCancelEdit={handleCancelEdit}
-        />
-        <div className="mt-8">
-          <ComposioAI onSuggestTask={handleAISuggestion} />
-        </div>
       </div>
 
       <div className="flex-1 overflow-hidden">
@@ -227,6 +204,33 @@ export function Calendar() {
           onEditTask={handleEditTask}
           selectedDate={selectedDate.toDate()}
         />
+      </div>
+
+      <div className={cn(
+        "fixed inset-0 z-50 bg-white md:relative md:block md:w-96",
+        "overflow-y-auto pb-20 md:pb-0",
+        isTaskFormOpen ? "translate-x-0" : "translate-x-full",
+        "md:translate-x-0 border-l"
+      )}>
+        <div className="sticky top-0 z-10 flex justify-end p-2 md:hidden bg-white border-b">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsTaskFormOpen(false)}
+          >
+            Close
+          </Button>
+        </div>
+        <div className="h-full overflow-y-auto px-6 py-4">
+          <CreateTaskForm 
+            onCreateTask={handleCreateOrUpdateTask} 
+            editTask={editingTask}
+            onCancelEdit={handleCancelEdit}
+          />
+          <div className="mt-12 mb-20 md:mb-8">
+            <ComposioAI onSuggestTask={handleAISuggestion} />
+          </div>
+        </div>
       </div>
     </div>
   )

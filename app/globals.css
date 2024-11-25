@@ -67,3 +67,38 @@
     @apply bg-background text-foreground;
   }
 }
+@media (max-width: 768px) {
+  .fc-view-harness {
+    height: calc(100vh - 200px) !important; /* Adjust based on your header height */
+  }
+  
+  .fc-toolbar {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+@layer utilities {
+  /* Mobile-specific calendar adjustments */
+  @media (max-width: 768px) {
+    /* Existing styles */
+    .fc-view-harness {
+      height: calc(100vh - 200px) !important;
+    }
+    
+    .fc-toolbar {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    /* New styles for better mobile experience */
+    .week-grid {
+      min-width: 800px; /* Ensures week view is scrollable horizontally */
+    }
+
+    .mobile-calendar-container {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+  }
+}

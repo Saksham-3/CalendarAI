@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from 'react'
-import { format, startOfWeek, addDays, addWeeks, subWeeks, isSameDay, isWithinInterval, parseISO, setHours, setMinutes, addHours, addMinutes } from 'date-fns'
+import { format, isSameDay, parseISO, setHours, setMinutes, addMinutes, addDays } from 'date-fns'
 import { WeekView } from './WeekView'
 import { MonthView } from './MonthView'
 import { CreateTaskForm } from './CreateTaskForm'
@@ -9,7 +9,6 @@ import { ComposioAI } from './ComposioAI'
 import { Task } from '../types/Task'
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight, Menu } from 'lucide-react'
-import { toast } from "@/components/ui/use-toast"
 import { useToast } from "@/components/ui/use-toast"
 import { cn } from '@/lib/utils'
 import dayjs from 'dayjs'
@@ -256,12 +255,10 @@ function isOverlapping(task1: Task, task2: Task): boolean {
   const task2Start = parseISO(`2000-01-01T${task2.startTime}`)
   const task2End = addMinutes(task2Start, getDurationInMinutes(task2.duration))
 
-  // Check if the tasks are on the same day
   if (!isSameDay(new Date(task1.date), new Date(task2.date))) {
     return false
   }
 
-  // Allow tasks to start exactly when another ends
   if (task1End.getTime() === task2Start.getTime() || 
       task2End.getTime() === task1Start.getTime()) {
     return false
@@ -270,26 +267,15 @@ function isOverlapping(task1: Task, task2: Task): boolean {
   return task1Start < task2End && task1End > task2Start
 }
 
-function getEndTime(task: Task): string {
-  const [hours, minutes] = task.startTime.split(':').map(Number)
-  const durationInMinutes = getDurationInMinutes(task.duration)
-  const endDate = addMinutes(setHours(setMinutes(new Date(), minutes), hours), durationInMinutes)
-return format(endDate, 'HH:mm')
-}
-
 function getDurationInMinutes(duration: string | undefined): number {
-  if (!duration) return 60 // default to 1 hour
+  if (!duration) return 60
   const [value, unit] = duration.split(' ')
   const numericValue = parseFloat(value)
   return unit.startsWith('hour') ? numericValue * 60 : numericValue
 }
 
 function getPriorityValue(priority: 'low' | 'medium' | 'high'): number {
-  switch (priority) {
-    case 'low': return 1
-    case 'medium': return 2
-    case 'high': return 3
-    default: return 0
-  }
+  const priorities = { low: 1, medium: 2, high: 3 }
+  return priorities[priority] || 0
 }
 

@@ -67,21 +67,9 @@
     @apply bg-background text-foreground;
   }
 }
-@media (max-width: 768px) {
-  .fc-view-harness {
-    height: calc(100vh - 200px) !important; /* Adjust based on your header height */
-  }
-  
-  .fc-toolbar {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-}
 
 @layer utilities {
-  /* Mobile-specific calendar adjustments */
   @media (max-width: 768px) {
-    /* Existing styles */
     .fc-view-harness {
       height: calc(100vh - 200px) !important;
     }
@@ -91,7 +79,6 @@
       gap: 0.5rem;
     }
 
-    /* New styles for better mobile experience */
     .week-grid {
       min-width: 800px;
       height: auto;
@@ -105,7 +92,6 @@
     }
   }
 
-  /* Desktop calendar adjustments */
   @media (min-width: 769px) {
     .mobile-calendar-container {
       height: calc(100vh - 100px);
@@ -113,24 +99,20 @@
     }
   }
 
-  /* Improve mobile scrolling - add these new styles */
   .overflow-y-auto {
     -webkit-overflow-scrolling: touch;
   }
   
-  /* Prevent content from getting stuck under mobile browser chrome */
   @supports (-webkit-touch-callout: none) {
     .h-screen {
       height: -webkit-fill-available;
     }
   }
 
-  /* Styles for the month year picker */
   .month-year-picker-mobile {
     @apply fixed inset-0 z-50 flex items-center justify-center p-4 md:p-0 md:relative;
   }
 
-  /* Ensure picker is scrollable on mobile */
   .month-year-picker-content {
     @apply max-h-[80vh] overflow-auto md:max-h-none md:overflow-visible;
     -webkit-overflow-scrolling: touch;

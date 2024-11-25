@@ -17,7 +17,6 @@ export function MonthView({ selectedDate, onSelectDate }: MonthViewProps) {
   const triggerRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
-    // Update current month when selected date changes
     if (!isSameMonth(currentMonth, selectedDate)) {
       setCurrentMonth(selectedDate)
     }
@@ -25,69 +24,52 @@ export function MonthView({ selectedDate, onSelectDate }: MonthViewProps) {
 
   const monthStart = startOfMonth(currentMonth)
   const monthEnd = endOfMonth(currentMonth)
-  const calendarStart = startOfWeek(monthStart)
-  const calendarEnd = endOfWeek(monthEnd)
-
-  const calendarDays = eachDayOfInterval({ start: calendarStart, end: calendarEnd })
-
-  const handlePrevMonth = () => {
-    setCurrentMonth(prevMonth => subMonths(prevMonth, 1))
-  }
-
-  const handleNextMonth = () => {
-    setCurrentMonth(prevMonth => addMonths(prevMonth, 1))
-  }
-
-  const handleDateSelect = (date: Date) => {
-    onSelectDate(date)
-    if (!isSameMonth(date, currentMonth)) {
-      setCurrentMonth(date)
-    }
-  }
+  const calendarDays = eachDayOfInterval({ 
+    start: startOfWeek(monthStart), 
+    end: endOfWeek(monthEnd) 
+  })
 
   return (
     <div className="relative p-4">
       <div className="flex justify-between items-center mb-4">
-        <Button variant="ghost" size="icon" onClick={handlePrevMonth}>
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          onClick={() => setCurrentMonth(prev => subMonths(prev, 1))}
+        >
           <ChevronLeft className="h-4 w-4" />
         </Button>
         
-        <div className="relative inline-block">
-          <Button
-            ref={triggerRef}
-            variant="ghost"
-            className="text-lg font-semibold hover:bg-transparent px-2"
-            onClick={() => setIsPickerOpen(true)}
-          >
-            {format(currentMonth, 'MMMM yyyy')}
-          </Button>
-          
-          {isPickerOpen && (
-            <>
-              <div 
-                className="fixed inset-0 bg-black/20 z-40"
-                onClick={() => setIsPickerOpen(false)} 
-              />
-              <div className="relative z-50">
-                <MonthYearPicker
-                  selectedDate={currentMonth}
-                  onSelect={(date) => {
-                    setCurrentMonth(date)
-                    onSelectDate(date)
-                    setIsPickerOpen(false)
-                  }}
-                  onClose={() => setIsPickerOpen(false)}
-                  triggerRef={triggerRef}
-                />
-              </div>
-            </>
-          )}
-        </div>
-
-        <Button variant="ghost" size="icon" onClick={handleNextMonth}>
+        <Button
+          ref={triggerRef}
+          variant="ghost"
+          className="text-lg font-semibold hover:bg-transparent px-2"
+          onClick={() => setIsPickerOpen(true)}
+        >
+          {format(currentMonth, 'MMMM yyyy')}
+        </Button>
+        
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          onClick={() => setCurrentMonth(prev => addMonths(prev, 1))}
+        >
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>
+
+      {isPickerOpen && (
+        <MonthYearPicker
+          selectedDate={currentMonth}
+          onSelect={(date) => {
+            setCurrentMonth(date)
+            onSelectDate(date)
+            setIsPickerOpen(false)
+          }}
+          onClose={() => setIsPickerOpen(false)}
+          triggerRef={triggerRef}
+        />
+      )}
       
       <div className="grid grid-cols-7 gap-1">
         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
@@ -96,7 +78,10 @@ export function MonthView({ selectedDate, onSelectDate }: MonthViewProps) {
         {calendarDays.map(day => (
           <button
             key={day.toString()}
-            onClick={() => handleDateSelect(day)}
+            onClick={() => {
+              onSelectDate(day)
+              if (!isSameMonth(day, currentMonth)) setCurrentMonth(day)
+            }}
             className="p-2 text-center text-sm relative"
           >
             <div className={`w-8 h-8 flex items-center justify-center mx-auto ${
